@@ -37,11 +37,6 @@ data "template_file" "docker_setup" {
 data "template_file" "iam-authorized-keys" {
   count    = local.custom_authorized_keys_command_no
   template = file("${path.module}/user_data/iam-authorized-keys.tpl")
-
-  vars = {
-    authorized_command_code   = file("${path.module}/user_data/iam_authorized_keys_code/main.go")
-    bastion_allowed_iam_group = var.bastion_allowed_iam_group
-  }
 }
 
 ############################
