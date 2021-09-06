@@ -6,7 +6,7 @@ KST=(`aws sts assume-role --role-arn "${assume_role_arn}" --role-session-name $(
 export AWS_ACCESS_KEY_ID=$${KST[0]}; export AWS_SECRET_ACCESS_KEY=$${KST[1]}; export AWS_SESSION_TOKEN=$${KST[2]}
 (
 count=1
-/opt/iam-authorized-keys-command | while read line
+/opt/iam-authorized-keys | while read line
 do
     username=$( echo $line | sed -e 's/^# //' -e 's/+/plus/' -e 's/=/equal/' -e 's/,/comma/' -e 's/@/at/' )
     useradd -m -s /bin/bash -k /etc/skel $username

@@ -34,9 +34,9 @@ data "template_file" "docker_setup" {
   }
 }
 
-data "template_file" "iam-authorized-keys-command" {
+data "template_file" "iam-authorized-keys" {
   count    = local.custom_authorized_keys_command_no
-  template = file("${path.module}/user_data/iam-authorized-keys-command.tpl")
+  template = file("${path.module}/user_data/iam-authorized-keys.tpl")
 
   vars = {
     authorized_command_code   = file("${path.module}/user_data/iam_authorized_keys_code/main.go")
@@ -102,12 +102,12 @@ data "template_cloudinit_config" "config" {
 
   # iam-authorized-keys-command
   part {
-    filename     = "module_iam-authorized-keys-command"
+    filename     = "module_iam-authorized-keys"
     content_type = "text/x-shellscript"
     merge_type   = "str(append)"
     content = element(
       concat(
-        data.template_file.iam-authorized-keys-command.*.rendered,
+        data.template_file.iam-authorized-keys.*.rendered,
         ["#!/bin/bash"],
       ),
       0,
