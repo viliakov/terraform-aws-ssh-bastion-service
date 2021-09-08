@@ -7,7 +7,7 @@ resource "aws_lb" "bastion-service" {
   load_balancer_type               = "network"
   internal                         = var.lb_is_internal
   subnets                          = var.subnets_lb
-  enable_cross_zone_load_balancing = true
+  enable_cross_zone_load_balancing = false
   tags                             = var.tags
 }
 
