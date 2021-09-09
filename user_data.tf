@@ -17,6 +17,7 @@ data "template_file" "ssh_populate_assume_role" {
 
   vars = {
     assume_role_arn = var.assume_role_arn
+    aws_region = var.aws_region
   }
 }
 
