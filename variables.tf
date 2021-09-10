@@ -24,10 +24,10 @@ variable "vpc" {
   description = "ID for Virtual Private Cloud to apply security policy and deploy stack to"
 }
 
-variable "bastion_service_host_key_name" {
-  description = "AWS ssh key *.pem to be used for ssh access to the bastion service host"
-  default     = ""
-}
+# variable "bastion_service_host_key_name" {
+#   description = "AWS ssh key *.pem to be used for ssh access to the bastion service host"
+#   default     = ""
+# }
 
 variable "public_ip" {
   default     = false
@@ -203,3 +203,14 @@ variable "route53_fqdn" {
   default     = ""
 }
 
+variable "ssh_host_username" {
+  description = "The default username used to SSH into the bastion host"
+  default = "admin"
+  type = string
+}
+
+variable "ssh_host_public_key" {
+  description = "The public key that is authorized to SSH into the bastion host"
+  default = ""
+  type = string
+}

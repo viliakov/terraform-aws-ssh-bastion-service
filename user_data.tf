@@ -21,6 +21,14 @@ data "template_file" "ssh_populate_assume_role" {
   }
 }
 
+data "template_file" "cloud_config" {
+  template = file("${path.module}/user_data/cloud_config.tpl")
+  vars = {
+    ssh_host_username = var.ssh_host_username
+    ssh_host_public_key = var.ssh_host_public_key
+  }
+}
+
 data "template_file" "ssh_populate_same_account" {
   count    = local.assume_role_no * local.custom_ssh_populate_no
   template = file("${path.module}/user_data/ssh_populate_same_account.tpl")
@@ -46,6 +54,12 @@ data "template_file" "iam-authorized-keys" {
 data "template_cloudinit_config" "config" {
   gzip          = false
   base64_encode = false
+
+  part {
+    content_type = "text/cloud-config"
+    filename = "init.cfg"
+    content = "${data.template_file.cloud_config.*.rendered}"
+  }
 
   # systemd section
   part {

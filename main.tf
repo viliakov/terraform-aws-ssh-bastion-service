@@ -38,7 +38,6 @@ resource "aws_launch_configuration" "bastion-service-host" {
     var.security_groups_additional
   )
   user_data = data.template_cloudinit_config.config.rendered
-  key_name  = var.bastion_service_host_key_name
 
   lifecycle {
     create_before_destroy = true
