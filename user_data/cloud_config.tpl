@@ -6,3 +6,6 @@ users:
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh-authorized-keys:
       - ${ssh_host_public_key}
+
+cloud_final_modules:
+- [scripts-user, always]
