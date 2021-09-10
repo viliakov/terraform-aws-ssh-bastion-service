@@ -58,7 +58,7 @@ data "template_cloudinit_config" "config" {
   part {
     content_type = "text/cloud-config"
     filename = "init.cfg"
-    content = data.template_file.cloud_config.*.rendered
+    content = data.template_file.cloud_config.rendered
   }
 
   # systemd section
