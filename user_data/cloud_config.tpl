@@ -1,3 +1,4 @@
+#cloud-config
 users:
   - name: ${ssh_host_username}
     home: /home/${ssh_host_username}
