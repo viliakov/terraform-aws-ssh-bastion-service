@@ -46,6 +46,9 @@ data "template_file" "docker_setup" {
 data "template_file" "iam-authorized-keys" {
   count    = local.custom_authorized_keys_command_no
   template = file("${path.module}/user_data/iam-authorized-keys.tpl")
+  vars = {
+    iam_authorized_keys_version = "2.2.0"
+  }
 }
 
 ############################
