@@ -45,3 +45,12 @@ output "target_group_arn" {
   value       = aws_lb_target_group.bastion-service.arn
 }
 
+output "host_ssh_public_key" {
+  description = "SSH public key for the bastion host instance"
+  value = var.host_ssh_public_key
+}
+
+output "host_ssh_username" {
+  description = "SSH username for the bastion host instance"
+  value = var.host_ssh_username
+}
