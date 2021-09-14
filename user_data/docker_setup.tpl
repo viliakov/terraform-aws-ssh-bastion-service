@@ -11,7 +11,12 @@ mkdir -p /opt/sshd_worker
 cat << EOF > /opt/sshd_worker/Dockerfile
 FROM ${bastion_container_image}
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server sudo awscli && echo '\033[1;31mI am a one-time Ubuntu container with passwordless sudo. \033[1;37;41mI will terminate after 12 hours or else on exit\033[0m' > /etc/motd && mkdir /var/run/sshd
+USER root
+
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server sudo awscli && \
+    echo '\033[1;31mI am a one-time Ubuntu container with passwordless sudo. \033[1;37;41mI will terminate after 12 hours or else on exit\033[0m' > /etc/motd && \
+    mkdir /var/run/sshd
 
 EXPOSE ${bastion_ssh_port}
 CMD ["/opt/ssh_populate.sh"]
