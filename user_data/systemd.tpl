@@ -4,7 +4,7 @@ cat << EOF > /etc/systemd/system/sshd_worker.socket
 Description=SSH Socket for Per-Connection docker ssh container
 
 [Socket]
-ListenStream=22
+ListenStream=${bastion_ssh_port}
 Accept=true
 
 [Install]
@@ -23,8 +23,8 @@ RuntimeMaxSec=43200
 [Install]
 WantedBy=multi-user.target
 EOF
-#set host sshd to run on port 2222 and restart service
-sed -i 's/#Port[[:blank:]]22/Port\ 2222/'  /etc/ssh/sshd_config
+#set host sshd to run on port ${host_ssh_port} and restart service
+sed -i 's/#Port[[:blank:]]22/Port\ ${host_ssh_port}/'  /etc/ssh/sshd_config
 systemctl restart sshd.service
 systemctl enable sshd_worker.socket
 systemctl start sshd_worker.socket

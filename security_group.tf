@@ -23,8 +23,8 @@ resource "aws_security_group" "bastion_service" {
 resource "aws_security_group_rule" "service_ssh_in" {
   count             = local.cidr_blocks_whitelist_service_yes //? 1 : 0
   type              = "ingress"
-  from_port         = 22
-  to_port           = 22
+  from_port         = var.bastion_ssh_port
+  to_port           = var.bastion_ssh_port
   protocol          = "tcp"
   cidr_blocks       = var.cidr_blocks_whitelist_service
   security_group_id = aws_security_group.bastion_service.id
@@ -36,15 +36,15 @@ resource "aws_security_group_rule" "service_ssh_in" {
 resource "aws_security_group_rule" "host_ssh_in_cond" {
   count             = local.hostport_whitelisted ? 1 : 0
   type              = "ingress"
-  from_port         = 2222
-  to_port           = 2222
+  from_port         = var.host_ssh_port
+  to_port           = var.host_ssh_port
   protocol          = "tcp"
   cidr_blocks       = var.cidr_blocks_whitelist_host
   security_group_id = aws_security_group.bastion_service.id
   description       = "bastion HOST access"
 }
 
-# Permissive egress policy because we want users to be able to install their own packages 
+# Permissive egress policy because we want users to be able to install their own packages
 
 resource "aws_security_group_rule" "bastion_host_out" {
   type              = "egress"
@@ -56,7 +56,7 @@ resource "aws_security_group_rule" "bastion_host_out" {
   description       = "bastion service and host egress"
 }
 
-# access from lb cidr ranges for healthchecks 
+# access from lb cidr ranges for healthchecks
 
 data "aws_subnet" "lb_subnets" {
   count = length(var.subnets_lb)

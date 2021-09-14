@@ -24,11 +24,6 @@ variable "vpc" {
   description = "ID for Virtual Private Cloud to apply security policy and deploy stack to"
 }
 
-# variable "bastion_service_host_key_name" {
-#   description = "AWS ssh key *.pem to be used for ssh access to the bastion service host"
-#   default     = ""
-# }
-
 variable "public_ip" {
   default     = false
   description = "Associate a public IP with the host instance when launching"
@@ -141,7 +136,7 @@ variable "bastion_vpc_name" {
   default     = "vpc_id"
 }
 
-variable "docker_container_image" {
+variable "bastion_container_image" {
   description = "The Docker image booted on an SSH connection"
   type = "string"
   default = "ubuntu:20.04"
@@ -204,14 +199,26 @@ variable "route53_fqdn" {
   default     = ""
 }
 
-variable "ssh_host_username" {
+variable "host_ssh_username" {
   description = "The default username used to SSH into the bastion host"
   default = "admin"
   type = string
 }
 
-variable "ssh_host_public_key" {
+variable "host_ssh_public_key" {
   description = "The public key that is authorized to SSH into the bastion host"
   default = ""
   type = string
+}
+
+variable "host_ssh_port" {
+  description = "The port that the host SSH daemon should be exposed on"
+  default = 2222
+  type = number
+}
+
+variable "bastion_ssh_port" {
+  description = "The port that the bastion SSH daemon should be exposed on"
+  default = 22
+  type = number
 }

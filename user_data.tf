@@ -7,6 +7,8 @@ data "template_file" "systemd" {
 
   vars = {
     bastion_host_name = local.bastion_host_name
+    bastion_ssh_port = var.bastion_ssh_port
+    host_ssh_port = var.host_ssh_port
     vpc               = var.vpc
   }
 }
@@ -24,8 +26,8 @@ data "template_file" "ssh_populate_assume_role" {
 data "template_file" "cloud_config" {
   template = file("${path.module}/user_data/cloud_config.tpl")
   vars = {
-    ssh_host_username = var.ssh_host_username
-    ssh_host_public_key = var.ssh_host_public_key
+    host_ssh_username = var.host_ssh_username
+    host_ssh_public_key = var.host_ssh_public_key
   }
 }
 
@@ -42,7 +44,8 @@ data "template_file" "docker_setup" {
   template = file("${path.module}/user_data/docker_setup.tpl")
 
   vars = {
-    docker_container_image = var.docker_container_image
+    bastion_container_image = var.bastion_container_image
+    bastion_ssh_port = var.bastion_ssh_port
   }
 }
 

@@ -1,11 +1,11 @@
 #cloud-config
 users:
-  - name: ${ssh_host_username}
-    home: /home/${ssh_host_username}
+  - name: ${host_ssh_username}
+    home: /home/${host_ssh_username}
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh-authorized-keys:
-      - ${ssh_host_public_key}
+      - ${host_ssh_public_key}
 
 cloud_final_modules:
 - [scripts-user, always]

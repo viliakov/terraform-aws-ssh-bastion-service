@@ -3,7 +3,7 @@
 #######################################################
 
 resource "aws_lb" "bastion-service" {
-  name                             = md5(format("${var.service_name}-%s", var.vpc))
+  name                             = format("${var.service_name}-%s", var.vpc)
   load_balancer_type               = "network"
   internal                         = var.lb_is_internal
   subnets                          = var.subnets_lb
@@ -18,7 +18,7 @@ resource "aws_lb" "bastion-service" {
 resource "aws_lb_listener" "bastion-service" {
   load_balancer_arn = aws_lb.bastion-service.arn
   protocol          = "TCP"
-  port              = "22"
+  port              = var.bastion_ssh_port
 
   default_action {
     target_group_arn = aws_lb_target_group.bastion-service.arn
@@ -34,7 +34,7 @@ resource "aws_lb_listener" "bastion-host" {
   count             = local.hostport_whitelisted ? 1 : 0
   load_balancer_arn = aws_lb.bastion-service.arn
   protocol          = "TCP"
-  port              = "2222"
+  port              = var.host_ssh_port
 
   default_action {
     target_group_arn = aws_lb_target_group.bastion-host[0].arn
@@ -48,7 +48,7 @@ resource "aws_lb_listener" "bastion-host" {
 resource "aws_lb_target_group" "bastion-service" {
   name     = md5(format("${var.service_name}-%s", var.vpc))
   protocol = "TCP"
-  port     = 22
+  port     = var.bastion_ssh_port
   vpc_id   = var.vpc
 
   health_check {
@@ -62,14 +62,14 @@ resource "aws_lb_target_group" "bastion-service" {
   tags = var.tags
 }
 
-######################################################	
+######################################################
 # Target group 	host - conditional
-#######################################################	
+#######################################################
 resource "aws_lb_target_group" "bastion-host" {
   count    = local.hostport_whitelisted ? 1 : 0
   name     = "bastion-host"
   protocol = "TCP"
-  port     = 2222
+  port     = var.host_ssh_port
   vpc_id   = var.vpc
 
   health_check {
