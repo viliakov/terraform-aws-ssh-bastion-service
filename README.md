@@ -139,11 +139,8 @@ Linux user names may only be up to 32 characters long.
 Allowed characters for IAM user names are:
 > alphanumeric, including the following common characters: plus (+), equal (=), comma (,), period (.), at (@), underscore (_), and hyphen (-).
 
-Allowed characters for Linux user names are (POSIX ("Portable Operating System Interface for Unix") standard (IEEE Standard 1003.1 2008)):
-> alphanumeric, including the following common characters: period (.), underscore (_), and hyphen (-).
-
-Therefore, characters that are allowed in IAM user names but not in Linux user names:
-> plus (+), equal (=), comma (,), at (@).
+The NAME_REGEX used by `adduser` to validate usernames is: `[a-z_][a-z0-9_-]*[$]`. Therefore, characters that are allowed in IAM user names but not in Linux user names are:
+> plus (+), equal (=), comma (,), at (@) and dot (.)
 
 This solution will use the following mapping for those special characters in iam usernames when creating linux user accounts on the sshd_worker container:
 
@@ -151,12 +148,13 @@ This solution will use the following mapping for those special characters in iam
 * `=` => `equal`
 * `,` => `comma`
 * `@` => `at`
+* `.` => `dot`
 
-So for example if we have an iam user called `test@+=,test` (which uses all of the disputed characters)
+So for example if we have an iam user called `test@+=,.test` (which uses all of the disputed characters)
 
-this username would translate to `testatplusequalcommatest` and they would need to shell in, e.g. with
+this username would translate to `testatplusequalcommadottest` and they would need to shell in, e.g. with
 
-`ssh testatplusequalcommatest@dev-eu-west-1-bastion-service.yourdomain.com`
+`ssh testatplusequalcommadottest@dev-eu-west-1-bastion-service.yourdomain.com`
 
 ## Users should be aware that:
 

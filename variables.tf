@@ -141,9 +141,10 @@ variable "bastion_vpc_name" {
   default     = "vpc_id"
 }
 
-variable "container_ubuntu_version" {
-  description = "ubuntu version to use for service container. Tested with 16.04; 18.04; 20.04"
-  default     = "20.04"
+variable "docker_container_image" {
+  description = "The Docker image booted on an SSH connection"
+  type = "string"
+  default = "ubuntu:20.04"
 }
 
 variable "extra_user_data_content" {

@@ -32,6 +32,9 @@ data "template_file" "cloud_config" {
 data "template_file" "ssh_populate_same_account" {
   count    = local.assume_role_no * local.custom_ssh_populate_no
   template = file("${path.module}/user_data/ssh_populate_same_account.tpl")
+  vars = {
+    aws_region = var.aws_region
+  }
 }
 
 data "template_file" "docker_setup" {
@@ -39,7 +42,7 @@ data "template_file" "docker_setup" {
   template = file("${path.module}/user_data/docker_setup.tpl")
 
   vars = {
-    container_ubuntu_version = var.container_ubuntu_version
+    docker_container_image = var.docker_container_image
   }
 }
 

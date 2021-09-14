@@ -6,15 +6,12 @@ KST=(`aws sts assume-role --role-arn "${assume_role_arn}" --role-session-name $(
 export AWS_ACCESS_KEY_ID=$${KST[0]}; export AWS_SECRET_ACCESS_KEY=$${KST[1]}; export AWS_SESSION_TOKEN=$${KST[2]}
 export AWS_REGION="${aws_region}"
 (
-count=1
 /opt/iam-authorized-keys | while read line
 do
-    username=$( echo $line | sed -e 's/^# //' -e 's/+/plus/' -e 's/=/equal/' -e 's/,/comma/' -e 's/@/at/' )
-    useradd -m -s /bin/bash -k /etc/skel $username
-    usermod -a -G sudo $username
-    echo $username\ 'ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/$count
-    chmod 0440 /etc/sudoers.d/$count
-    count=$(( $count + 1 ))
+    username=$( echo $line | sed -e 's/^# //' -e 's/+/plus/g' -e 's/=/equal/g' -e 's/,/comma/g' -e 's/@/at/g' -e 's/\./dot/g' )
+    useradd -m -s /bin/bash -k /etc/skel -U -G sudo $username
+    echo $username\ 'ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/$username
+    chmod 0440 /etc/sudoers.d/$username
     mkdir /home/$username/.ssh
     read line2
     echo $line2 >> /home/$username/.ssh/authorized_keys
