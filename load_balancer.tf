@@ -3,7 +3,7 @@
 #######################################################
 
 resource "aws_lb" "bastion-service" {
-  name                             = format("${var.service_name}-%s", var.vpc)
+  name                             = md5(format("${var.service_name}-%s", var.vpc))
   load_balancer_type               = "network"
   internal                         = var.lb_is_internal
   subnets                          = var.subnets_lb
