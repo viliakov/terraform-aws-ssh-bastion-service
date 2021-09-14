@@ -17,7 +17,7 @@ locals {
 }
 
 ##########################
-# Logic for security group and listeners 
+# Logic for security group and listeners
 ##########################
 locals {
   hostport_whitelisted = join(",", var.cidr_blocks_whitelist_host) != ""
@@ -25,7 +25,7 @@ locals {
 }
 
 ##########################
-# Logic tests for  assume role vs same account 
+# Logic tests for  assume role vs same account
 ##########################
 locals {
   assume_role_yes = var.assume_role_arn != "" ? 1 : 0
@@ -47,7 +47,7 @@ locals {
 ##########################
 
 locals {
-  bastion_ami_id = var.custom_ami_id == "" ? data.aws_ami.debian.id : var.custom_ami_id
+  bastion_ami_id = var.custom_ami_id == "" ? data.aws_ami.ubuntu.id : var.custom_ami_id
 }
 
 ##########################
