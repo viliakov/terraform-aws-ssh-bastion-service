@@ -23,17 +23,6 @@ data "aws_ami" "ubuntu" {
     owners = ["099720109477"] # Canonical
 }
 
-data "aws_ami" "debian" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["debian-bullseye-hvm-x86_64-*"]
-  }
-
-  owners = ["379101102735"] # Debian
-}
-
 ############################
 #Launch configuration for service host
 ############################
