@@ -1,28 +1,3 @@
-#get aws region for use later in plan
-data "aws_region" "current" {
-}
-
-##########################
-#Query for most recent AMI of type debian
-##########################
-
-
-data "aws_ami" "ubuntu" {
-    most_recent = true
-
-    filter {
-        name   = "name"
-        values = ["ubuntu/images/hvm-ssd/ubuntu-hirsute-21.04-amd64-server-*"]
-    }
-
-    filter {
-        name   = "virtualization-type"
-        values = ["hvm"]
-    }
-
-    owners = ["099720109477"] # Canonical
-}
-
 ############################
 #Launch configuration for service host
 ############################
@@ -30,15 +5,9 @@ data "aws_ami" "ubuntu" {
 resource "aws_launch_configuration" "bastion-service-host" {
   name_prefix   = "${var.service_name}-host"
   image_id      = local.bastion_ami_id
-  instance_type = var.bastion_instance_type
-  iam_instance_profile = element(
-    concat(
-      aws_iam_instance_profile.bastion_service_assume_role_profile.*.arn,
-      aws_iam_instance_profile.bastion_service_profile.*.arn,
-    ),
-    0,
-  )
-  associate_public_ip_address = var.public_ip
+  instance_type = var.host_instance_type
+  iam_instance_profile = aws_iam_instance_profile.bastion_service_profile.arn
+  associate_public_ip_address = var.host_public_ip
   security_groups = concat(
     [aws_security_group.bastion_service.id],
     var.security_groups_additional
@@ -47,6 +16,10 @@ resource "aws_launch_configuration" "bastion-service-host" {
 
   lifecycle {
     create_before_destroy = true
+  }
+
+  root_block_device {
+    encrypted = true
   }
 }
 
@@ -70,7 +43,7 @@ resource "aws_autoscaling_group" "bastion-service" {
   min_size             = var.asg_min
   desired_capacity     = var.asg_desired
   launch_configuration = aws_launch_configuration.bastion-service-host.name
-  vpc_zone_identifier  = var.subnets_asg
+  vpc_zone_identifier  = var.asg_subnets
   target_group_arns = concat(
     [aws_lb_target_group.bastion-service.arn],
     aws_lb_target_group.bastion-host.*.arn
@@ -109,9 +82,9 @@ data "template_file" "sample_policies_for_parent_account" {
   template = file("${path.module}/sts_assumerole_example/policy_example.tpl")
 
   vars = {
-    aws_profile               = var.aws_profile
+    aws_account_arn               = data.aws_caller_identity.current.arn
     bastion_allowed_iam_group = var.bastion_allowed_iam_group
-    assume_role_arn           = var.assume_role_arn
+    bastion_assume_role_arn           = var.bastion_assume_role_arn
   }
 }
 

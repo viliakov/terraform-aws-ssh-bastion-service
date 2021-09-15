@@ -3,23 +3,23 @@
 ############################
 data "template_file" "systemd" {
   template = file("${path.module}/user_data/systemd.tpl")
-  count    = local.custom_systemd_no
+  count    = var.custom_systemd ? 0 : 1
 
   vars = {
     bastion_host_name = local.bastion_host_name
     bastion_ssh_port = var.bastion_ssh_port
     host_ssh_port = var.host_ssh_port
-    vpc               = var.vpc
+    vpc               = var.vpc_id
   }
 }
 
-data "template_file" "ssh_populate_assume_role" {
-  count    = local.assume_role_yes * local.custom_ssh_populate_no
-  template = file("${path.module}/user_data/ssh_populate_assume_role.tpl")
+data "template_file" "ssh_populate" {
+  count    = var.custom_ssh_populate ? 0 : 1
+  template = file("${path.module}/user_data/ssh_populate.tpl")
 
   vars = {
-    assume_role_arn = var.assume_role_arn
-    aws_region = var.aws_region
+    bastion_assume_role_arn = var.bastion_assume_role_arn
+    aws_region = data.aws_region.current.name
   }
 }
 
@@ -31,16 +31,8 @@ data "template_file" "cloud_config" {
   }
 }
 
-data "template_file" "ssh_populate_same_account" {
-  count    = local.assume_role_no * local.custom_ssh_populate_no
-  template = file("${path.module}/user_data/ssh_populate_same_account.tpl")
-  vars = {
-    aws_region = var.aws_region
-  }
-}
-
 data "template_file" "docker_setup" {
-  count    = local.custom_docker_setup_no
+  count    = var.custom_docker_setup ? 0 : 1
   template = file("${path.module}/user_data/docker_setup.tpl")
 
   vars = {
@@ -50,7 +42,7 @@ data "template_file" "docker_setup" {
 }
 
 data "template_file" "iam-authorized-keys" {
-  count    = local.custom_authorized_keys_command_no
+  count    = var.custom_authorized_keys_command ? 0 : 1
   template = file("${path.module}/user_data/iam-authorized-keys.tpl")
   vars = {
     iam_authorized_keys_version = "2.2.0"
@@ -82,26 +74,12 @@ data "template_cloudinit_config" "config" {
 
   # ssh_populate_assume_role
   part {
-    filename     = "module_ssh_populate_assume_role"
+    filename     = "module_ssh_populate"
     content_type = "text/x-shellscript"
     merge_type   = "str(append)"
     content = element(
       concat(
-        data.template_file.ssh_populate_assume_role.*.rendered,
-        ["#!/bin/bash"],
-      ),
-      0,
-    )
-  }
-
-  # ssh_populate_same_account
-  part {
-    filename     = "module_ssh_populate_same_account"
-    content_type = "text/x-shellscript"
-    merge_type   = "str(append)"
-    content = element(
-      concat(
-        data.template_file.ssh_populate_same_account.*.rendered,
+        data.template_file.ssh_populate.*.rendered,
         ["#!/bin/bash"],
       ),
       0,

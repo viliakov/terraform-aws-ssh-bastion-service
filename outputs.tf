@@ -25,11 +25,6 @@ output "lb_zone_id" {
   value = aws_lb.bastion-service.zone_id
 }
 
-output "bastion_service_assume_role_name" {
-  description = "role created for service host asg - if created with assume role"
-  value       = aws_iam_role.bastion_service_assume_role.*.name
-}
-
 output "bastion_service_role_name" {
   description = "role created for service host asg - if created without assume role"
   value       = aws_iam_role.bastion_service_role.*.name

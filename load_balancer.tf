@@ -3,10 +3,10 @@
 #######################################################
 
 resource "aws_lb" "bastion-service" {
-  name                             = md5(format("${var.service_name}-%s", var.vpc))
+  name                             = md5(format("${var.service_name}-%s", var.vpc_id))
   load_balancer_type               = "network"
   internal                         = var.lb_is_internal
-  subnets                          = var.subnets_lb
+  subnets                          = var.lb_subnets
   enable_cross_zone_load_balancing = false
   tags                             = var.tags
 }
@@ -46,10 +46,10 @@ resource "aws_lb_listener" "bastion-host" {
 # Target group service
 #######################################################
 resource "aws_lb_target_group" "bastion-service" {
-  name     = md5(format("${var.service_name}-%s", var.vpc))
+  name     = md5(format("${var.service_name}-%s", var.vpc_id))
   protocol = "TCP"
   port     = var.bastion_ssh_port
-  vpc_id   = var.vpc
+  vpc_id   = var.vpc_id
 
   health_check {
     healthy_threshold   = var.lb_healthy_threshold
@@ -70,7 +70,7 @@ resource "aws_lb_target_group" "bastion-host" {
   name     = "bastion-host"
   protocol = "TCP"
   port     = var.host_ssh_port
-  vpc_id   = var.vpc
+  vpc_id   = var.vpc_id
 
   health_check {
     healthy_threshold   = var.lb_healthy_threshold

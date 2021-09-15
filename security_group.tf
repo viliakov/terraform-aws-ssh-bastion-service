@@ -6,7 +6,7 @@ resource "aws_security_group" "bastion_service" {
   name_prefix            = var.service_name == "bastion-service" ? format("%s-%s", var.environment_name, var.service_name) : var.service_name
   description            = "Bastion service"
   revoke_rules_on_delete = true
-  vpc_id                 = var.vpc
+  vpc_id                 = var.vpc_id
   tags                   = var.tags
 
   lifecycle {
@@ -21,12 +21,12 @@ resource "aws_security_group" "bastion_service" {
 # SSH access in from whitelist IP ranges
 
 resource "aws_security_group_rule" "service_ssh_in" {
-  count             = local.cidr_blocks_whitelist_service_yes //? 1 : 0
+  count             = local.bastion_cidr_blocks_whitelist_yes //? 1 : 0
   type              = "ingress"
   from_port         = var.bastion_ssh_port
   to_port           = var.bastion_ssh_port
   protocol          = "tcp"
-  cidr_blocks       = var.cidr_blocks_whitelist_service
+  cidr_blocks       = var.bastion_cidr_blocks_whitelist
   security_group_id = aws_security_group.bastion_service.id
   description       = "bastion service access"
 }
@@ -39,7 +39,7 @@ resource "aws_security_group_rule" "host_ssh_in_cond" {
   from_port         = var.host_ssh_port
   to_port           = var.host_ssh_port
   protocol          = "tcp"
-  cidr_blocks       = var.cidr_blocks_whitelist_host
+  cidr_blocks       = var.host_cidr_blocks_whitelist
   security_group_id = aws_security_group.bastion_service.id
   description       = "bastion HOST access"
 }
@@ -59,8 +59,8 @@ resource "aws_security_group_rule" "bastion_host_out" {
 # access from lb cidr ranges for healthchecks
 
 data "aws_subnet" "lb_subnets" {
-  count = length(var.subnets_lb)
-  id    = var.subnets_lb[count.index]
+  count = length(var.lb_subnets)
+  id    = var.lb_subnets[count.index]
 }
 
 resource "aws_security_group_rule" "lb_healthcheck_in" {

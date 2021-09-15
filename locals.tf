@@ -3,7 +3,7 @@
 ##########################
 
 locals {
-  bastion_vpc_name = var.bastion_vpc_name == "vpc_id" ? var.vpc : var.bastion_vpc_name
+  bastion_vpc_name = var.bastion_vpc_name == "vpc_id" ? var.vpc_id : var.bastion_vpc_name
   bastion_host_name = var.bastion_host_name == "" ? join(
     "-",
     compact(
@@ -20,7 +20,7 @@ locals {
 # Logic for security group and listeners
 ##########################
 locals {
-  hostport_whitelisted = join(",", var.cidr_blocks_whitelist_host) != ""
+  hostport_whitelisted = join(",", var.host_cidr_blocks_whitelist) != ""
   hostport_healthcheck = var.lb_healthcheck_port == "2222"
 }
 
@@ -28,34 +28,25 @@ locals {
 # Logic tests for  assume role vs same account
 ##########################
 locals {
-  assume_role_yes = var.assume_role_arn != "" ? 1 : 0
-  assume_role_no  = var.assume_role_arn == "" ? 1 : 0
+  assume_role_yes = var.bastion_assume_role_arn != "" ? 1 : 0
+  assume_role_no  = var.bastion_assume_role_arn == "" ? 1 : 0
 }
 
-##########################
-# Logic for using module default userdata sections or not
-##########################
-locals {
-  custom_ssh_populate_no            = var.custom_ssh_populate == "" ? 1 : 0
-  custom_authorized_keys_command_no = var.custom_authorized_keys_command == "" ? 1 : 0
-  custom_docker_setup_no            = var.custom_docker_setup == "" ? 1 : 0
-  custom_systemd_no                 = var.custom_systemd == "" ? 1 : 0
-}
 
 ##########################
 # Logic for using module default or custom ami
 ##########################
 
 locals {
-  bastion_ami_id = var.custom_ami_id == "" ? data.aws_ami.ubuntu.id : var.custom_ami_id
+  bastion_ami_id = var.host_ami_id == "" ? data.aws_ami.ubuntu.id : var.host_ami_id
 }
 
 ##########################
-# Logic for using cidr_blocks_whitelist_service ONLY if provided
+# Logic for using bastion_cidr_blocks_whitelist ONLY if provided
 ##########################
 
 locals {
-  cidr_blocks_whitelist_service_yes = join(",", var.cidr_blocks_whitelist_service) != "" ? 1 : 0
+  bastion_cidr_blocks_whitelist_yes = join(",", var.bastion_cidr_blocks_whitelist) != "" ? 1 : 0
 }
 
 ##########################
@@ -66,3 +57,11 @@ locals {
   route53_name_components = "${local.bastion_host_name}-${var.service_name}.${var.dns_domain}"
 }
 
+locals {
+  service_name = var.service_name == "bastion-service" ? format(
+    "%s-%s-%s_bastion",
+    var.environment_name,
+    data.aws_region.current.name,
+    var.vpc_id,
+  ) : var.service_name
+}

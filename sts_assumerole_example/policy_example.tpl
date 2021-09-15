@@ -32,7 +32,7 @@
     {
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::${aws_profile}:root"
+        "AWS": "${aws_account_arn}"
       },
       "Action": "sts:AssumeRole",
       "Condition": {}
@@ -44,4 +44,4 @@
 
 Users must be in the ${bastion_allowed_iam_group} group in that account and the role name must match the role name given here (after the '/'):
 
-${assume_role_arn}
+${bastion_assume_role_arn}

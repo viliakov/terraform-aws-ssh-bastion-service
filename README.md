@@ -30,7 +30,7 @@ Ivan Mesic has kindly contributed an example use of this module creating a VPC a
 
 # Custom sections:
 
-You can **specify a custom base AMI** to use for the service host if you wish with var.custom_ami_id. Tested and working using Ubuntu 18.04 as an example ;)
+You can **specify a custom base AMI** to use for the service host if you wish with var.host_ami_id. Tested and working using Ubuntu 18.04 as an example ;)
 
  **Userdata has been divided into sections which are individually applicable**. Each is a HEREDOC and may be excluded by assigning any non-empty value to the relevant section variable. The value given is used simply for a logic test and not passed into userdata. If you ignore all of these variables then historic/ default behaviour continues and everything is built on the host instance on first boot (allow 3 minutes on t2.medium).
 
@@ -48,7 +48,7 @@ If you exclude any section then you must replace it with equivalent functionalit
 
 # Ability to assume a role in another account
 
-The ability to assume a role to source IAM users from another account has been integrated with conditional logic. If you supply the ARN for a role for the bastion service to assume (typically in another account) ${var.assume_role_arn} then this plan will create an instance profile, role and policy along with each bastion to make use of it. A matching sample policy and trust relationship is given as an output from the plan to assist with application in the other account. If you do not supply this arn then this plan presumes IAM lookups in the same account and creates an appropriate instance profile, role and policies for each bastion in the same AWS account. 'Each bastion' here refers to a combination of environment, AWS account, AWS region and VPCID determined by deployment. This is a high availabilty service, but if you are making more than one independent deployment using this same module within such a combination then you can specify "service_name" to avoid resource collision.
+The ability to assume a role to source IAM users from another account has been integrated with conditional logic. If you supply the ARN for a role for the bastion service to assume (typically in another account) ${var.bastion_assume_role_arn} then this plan will create an instance profile, role and policy along with each bastion to make use of it. A matching sample policy and trust relationship is given as an output from the plan to assist with application in the other account. If you do not supply this arn then this plan presumes IAM lookups in the same account and creates an appropriate instance profile, role and policies for each bastion in the same AWS account. 'Each bastion' here refers to a combination of environment, AWS account, AWS region and VPCID determined by deployment. This is a high availabilty service, but if you are making more than one independent deployment using this same module within such a combination then you can specify "service_name" to avoid resource collision.
 
 If you are seeking a solution for ECS hosts then you are recommended to  the [Widdix project](https://github.com/widdix/aws-ec2-ssh). This offers IAM authentication for local users with a range of features suitable for a long-lived stateful host built as an AMI or with configuration management tools.
 
@@ -62,7 +62,7 @@ You can overwrite the suggested hostname entirely with `var.bastion_host_name.`
 
 You can _instead_ customise just the last part of the hostname if you like with `bastion_vpc_name`. By default this is the vpc ID via the magic default value of 'vpc_id' with the format
 
-  	name = "${var.environment_name}-${data.aws_region.current.name}-${var.vpc}-bastion-service.${var.dns_domain}"
+  	name = "${var.environment_name}-${data.aws_region.current.name}-${var.vpc_id}-bastion-service.${var.dns_domain}"
 
 e.g.
 
@@ -110,7 +110,7 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-custom_ami_id = data.aws_ami.ubuntu.id
+host_ami_id = data.aws_ami.ubuntu.id
 ```
 
 Debian was chosen originally because the socket activation requires systemd but Ubuntu 16.04 did not automatically set up DHCP for additional elastic network interfaces (see version 1 series). Both Debian 10.x 'Buster' and Ubuntu 20.04 'Focal' have breaking changes around repository/package naming and Golang behaviour - look for support for these in a future release - contributions very welcome!
@@ -234,11 +234,11 @@ The files in question on the host deploy thus:
 
 ## Sample policy for other accounts
 
-If you supply the ARN for an external role for the bastion service to assume `${var.assume_role_arn}` then a matching sample policy and trust relationship is given as an output from the plan to assist with application in that other account for typical operation.
+If you supply the ARN for an external role for the bastion service to assume `${var.bastion_assume_role_arn}` then a matching sample policy and trust relationship is given as an output from the plan to assist with application in that other account for typical operation.
 
 The DNS entry (if created) for the service is also displayed as an output of the format
 
-  	name = "${var.environment_name}-${data.aws_region.current.name}-${var.vpc}-bastion-service.${var.dns_domain}"
+  	name = "${var.environment_name}-${data.aws_region.current.name}-${var.vpc_id}-bastion-service.${var.dns_domain}"
 
 ## Inputs and Outputs
 

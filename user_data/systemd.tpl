@@ -10,6 +10,7 @@ Accept=true
 [Install]
 WantedBy=sockets.target
 EOF
+
 cat << EOF > /etc/systemd/system/sshd_worker@.service
 [Unit]
 Description=SSH Per-Connection docker ssh container
@@ -23,6 +24,7 @@ RuntimeMaxSec=43200
 [Install]
 WantedBy=multi-user.target
 EOF
+
 #set host sshd to run on port ${host_ssh_port} and restart service
 sed -i 's/#Port[[:blank:]]22/Port\ ${host_ssh_port}/'  /etc/ssh/sshd_config
 systemctl restart sshd.service
@@ -31,4 +33,4 @@ systemctl start sshd_worker.socket
 systemctl daemon-reload
 
 #set hostname to match dns
-hostnamectl set-hostname ${bastion_host_name}-${vpc}-bastion-host
+hostnamectl set-hostname ${bastion_host_name}
