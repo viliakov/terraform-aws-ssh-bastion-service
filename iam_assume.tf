@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "bastion_service_assume_role" {
 
 resource "aws_iam_policy" "bastion_service_assume_role" {
   count = local.assume_role_yes
-  name = local.service_name
+  name = "${local.role_name}-assume"
   policy = data.aws_iam_policy_document.bastion_service_assume_role[0].json
 }
 

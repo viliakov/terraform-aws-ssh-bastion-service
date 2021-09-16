@@ -3,11 +3,11 @@
 ##################
 
 resource "aws_security_group" "bastion_service" {
-  name_prefix            = var.service_name == "bastion-service" ? format("%s-%s", var.environment_name, var.service_name) : var.service_name
-  description            = "Bastion service"
+  name                   = local.sg_name
+  description            = "Bastion service SSH SecurityGroup"
   revoke_rules_on_delete = true
   vpc_id                 = var.vpc_id
-  tags                   = var.tags
+  tags                   = merge({Name = local.sg_name}, var.tags)
 
   lifecycle {
     create_before_destroy = true

@@ -62,7 +62,7 @@ You can overwrite the suggested hostname entirely with `var.bastion_host_name.`
 
 You can _instead_ customise just the last part of the hostname if you like with `bastion_vpc_name`. By default this is the vpc ID via the magic default value of 'vpc_id' with the format
 
-  	name = "${var.environment_name}-${data.aws_region.current.name}-${var.vpc_id}-bastion-service.${var.dns_domain}"
+  	name = "${var.aws_environment}-${data.aws_region.current.name}-${var.vpc_id}-bastion-service.${var.dns_domain}"
 
 e.g.
 
@@ -238,7 +238,7 @@ If you supply the ARN for an external role for the bastion service to assume `${
 
 The DNS entry (if created) for the service is also displayed as an output of the format
 
-  	name = "${var.environment_name}-${data.aws_region.current.name}-${var.vpc_id}-bastion-service.${var.dns_domain}"
+  	name = "${var.aws_environment}-${data.aws_region.current.name}-${var.vpc_id}-bastion-service.${var.dns_domain}"
 
 ## Inputs and Outputs
 

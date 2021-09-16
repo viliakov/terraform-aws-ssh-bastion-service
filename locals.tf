@@ -8,7 +8,7 @@ locals {
     "-",
     compact(
       [
-        var.environment_name,
+        var.aws_environment,
         data.aws_region.current.name,
         local.bastion_vpc_name,
       ],
@@ -54,14 +54,16 @@ locals {
 ##########################
 
 locals {
-  route53_name_components = "${local.bastion_host_name}-${var.service_name}.${var.dns_domain}"
+  route53_name_components = "bastion.${var.name}.${var.aws_environment}.${var.dns_domain}"
 }
 
 locals {
-  service_name = var.service_name == "bastion-service" ? format(
-    "%s-%s-%s_bastion",
-    var.environment_name,
-    data.aws_region.current.name,
-    var.vpc_id,
-  ) : var.service_name
+  instance_name = "bastion.${var.name}.${var.aws_environment}.${var.dns_domain}"
+  role_name = "bastion.${var.name}.${var.aws_environment}.${var.dns_domain}"
+  lb_name_prefix = substr("bastion-${var.name}-${var.aws_environment}", 0, 25)
+  sg_name = "bastion-${var.name}-${var.aws_environment}-${var.dns_domain}"
+}
+
+locals {
+  ec2_tags = merge(var.tags, {"Name"=local.instance_name})
 }

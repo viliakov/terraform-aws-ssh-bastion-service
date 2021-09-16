@@ -84,13 +84,22 @@ variable "host_ssh_username" {
   type = string
 }
 
-variable "environment_name" {
-  description = "the name of the environment that we are deploying to, used in tagging. Overwritten if var.service_name and var.bastion_host_name values are changed"
-  default     = "staging"
+##########################
+# AWS variables
+##########################
+variable "name" {
+  description = "Name of this Terraform deployment, used as a prefix for various resources"
+  type = string
+}
+
+variable "aws_environment" {
+  description = "the name of the AWS environment that we are deploying to (i.e. prod, staging, preprod, etc)"
+  type = string
 }
 
 variable "vpc_id" {
   description = "ID for Virtual Private Cloud to apply security policy and deploy stack to"
+  type = string
 }
 
 variable "tags" {
@@ -105,19 +114,15 @@ variable "security_groups_additional" {
   default     = []
 }
 
-variable "service_name" {
-  description = "Unique name per vpc for associated resources- set to some non-default value for multiple deployments per vpc"
-  default     = "bastion-service"
+variable "dns_domain" {
+  description = "The domain used for Route53 records"
+  type = string
+  default = ""
 }
 
 ##########################
 # Route 53 variables
 ##########################
-variable "dns_domain" {
-  description = "The domain used for Route53 records"
-  default     = ""
-}
-
 variable "route53_fqdn" {
   description = "If creating a public DNS entry with this module then you may override the default constructed DNS entry by supplying a fully qualified domain name here which will be used verbatim"
   default     = ""

@@ -3,7 +3,7 @@
 ############################
 
 resource "aws_launch_configuration" "bastion-service-host" {
-  name_prefix   = "${var.service_name}-host"
+  name   = local.instance_name
   image_id      = local.bastion_ami_id
   instance_type = var.host_instance_type
   iam_instance_profile = aws_iam_instance_profile.bastion_service_profile.arn
@@ -28,17 +28,17 @@ resource "aws_launch_configuration" "bastion-service-host" {
 #######################################################
 
 data "null_data_source" "asg-tags" {
-  count = length(keys(var.tags))
+  count = length(keys(local.ec2_tags))
 
   inputs = {
-    key                 = element(keys(var.tags), count.index)
-    value               = element(values(var.tags), count.index)
+    key                 = element(keys(local.ec2_tags), count.index)
+    value               = element(values(local.ec2_tags), count.index)
     propagate_at_launch = true
   }
 }
 
 resource "aws_autoscaling_group" "bastion-service" {
-  name_prefix          = "${var.service_name}-asg"
+  name          = "${local.instance_name}-asg"
   max_size             = var.asg_max
   min_size             = var.asg_min
   desired_capacity     = var.asg_desired
@@ -53,6 +53,7 @@ resource "aws_autoscaling_group" "bastion-service" {
   lifecycle {
     create_before_destroy = true
   }
+
   tags = data.null_data_source.asg-tags.*.outputs
 }
 

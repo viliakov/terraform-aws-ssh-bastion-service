@@ -1,7 +1,6 @@
 # aws iam role for host
-
 resource "aws_iam_role" "bastion_service_role" {
-  name = local.service_name
+  name               = local.role_name
   assume_role_policy = data.aws_iam_policy_document.bastion_service_role.json
   tags               = var.tags
 }
@@ -23,11 +22,11 @@ data "aws_iam_policy_document" "bastion_service_role" {
 }
 
 #########################
-#Instance profile to assume role
+#Instance profile for role
 #########################
 
 resource "aws_iam_instance_profile" "bastion_service_profile" {
-  name = local.service_name
+  name = local.role_name
   role = aws_iam_role.bastion_service_role.name
 }
 
