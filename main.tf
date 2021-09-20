@@ -2,24 +2,36 @@
 #Launch configuration for service host
 ############################
 
-resource "aws_launch_configuration" "bastion-service-host" {
+resource "aws_launch_template" "bastion-service-host" {
   name   = local.instance_name
   image_id      = local.bastion_ami_id
   instance_type = var.host_instance_type
-  iam_instance_profile = aws_iam_instance_profile.bastion_service_profile.arn
-  associate_public_ip_address = var.host_public_ip
-  security_groups = concat(
+
+  iam_instance_profile {
+    arn = aws_iam_instance_profile.bastion_service_profile.arn
+  }
+
+  network_interfaces {
+    associate_public_ip_address = var.host_public_ip
+    security_groups = concat(
     [aws_security_group.bastion_service.id],
     var.security_groups_additional
   )
-  user_data = data.template_cloudinit_config.config.rendered
-
-  lifecycle {
-    create_before_destroy = true
   }
 
-  root_block_device {
-    encrypted = true
+  user_data = data.template_cloudinit_config.config.rendered
+
+  block_device_mappings {
+    device_name = local.bastion_ami_root_block_device
+    ebs {
+      volume_size = 16
+      encrypted = true
+    }
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = local.ec2_tags
   }
 }
 
@@ -38,21 +50,20 @@ data "null_data_source" "asg-tags" {
 }
 
 resource "aws_autoscaling_group" "bastion-service" {
-  name          = "${local.instance_name}-asg"
+  name                 = "${local.instance_name}-asg"
   max_size             = var.asg_max
   min_size             = var.asg_min
   desired_capacity     = var.asg_desired
-  launch_configuration = aws_launch_configuration.bastion-service-host.name
+  launch_template {
+    id = aws_launch_template.bastion-service-host.id
+    version            = "$Latest"
+  }
+
   vpc_zone_identifier  = var.asg_subnets
   target_group_arns = concat(
     [aws_lb_target_group.bastion-service.arn],
     aws_lb_target_group.bastion-host.*.arn
   )
-
-
-  lifecycle {
-    create_before_destroy = true
-  }
 
   tags = data.null_data_source.asg-tags.*.outputs
 }
@@ -88,4 +99,3 @@ data "template_file" "sample_policies_for_parent_account" {
     bastion_assume_role_arn           = var.bastion_assume_role_arn
   }
 }
-

@@ -8,10 +8,6 @@ resource "aws_security_group" "bastion_service" {
   revoke_rules_on_delete = true
   vpc_id                 = var.vpc_id
   tags                   = merge({Name = local.sg_name}, var.tags)
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 ##################

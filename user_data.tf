@@ -54,7 +54,7 @@ data "template_file" "iam-authorized-keys" {
 ############################
 data "template_cloudinit_config" "config" {
   gzip          = false
-  base64_encode = false
+  base64_encode = true
 
   part {
     content_type = "text/cloud-config"

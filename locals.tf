@@ -39,6 +39,7 @@ locals {
 
 locals {
   bastion_ami_id = var.host_ami_id == "" ? data.aws_ami.ubuntu.id : var.host_ami_id
+  bastion_ami_root_block_device = data.aws_ami.ubuntu.root_device_name
 }
 
 ##########################
