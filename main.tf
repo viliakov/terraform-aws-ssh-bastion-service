@@ -3,9 +3,10 @@
 ############################
 
 resource "aws_launch_template" "bastion-service-host" {
-  name   = local.instance_name
-  image_id      = local.bastion_ami_id
-  instance_type = var.host_instance_type
+  name                   = local.instance_name
+  image_id               = local.bastion_ami_id
+  instance_type          = var.host_instance_type
+  update_default_version = true
 
   iam_instance_profile {
     arn = aws_iam_instance_profile.bastion_service_profile.arn
@@ -14,9 +15,9 @@ resource "aws_launch_template" "bastion-service-host" {
   network_interfaces {
     associate_public_ip_address = var.host_public_ip
     security_groups = concat(
-    [aws_security_group.bastion_service.id],
-    var.security_groups_additional
-  )
+      [aws_security_group.bastion_service.id],
+      var.security_groups_additional
+    )
   }
 
   user_data = data.template_cloudinit_config.config.rendered
@@ -25,13 +26,13 @@ resource "aws_launch_template" "bastion-service-host" {
     device_name = local.bastion_ami_root_block_device
     ebs {
       volume_size = 16
-      encrypted = true
+      encrypted   = true
     }
   }
 
   tag_specifications {
     resource_type = "instance"
-    tags = local.ec2_tags
+    tags          = local.ec2_tags
   }
 }
 
@@ -50,16 +51,16 @@ data "null_data_source" "asg-tags" {
 }
 
 resource "aws_autoscaling_group" "bastion-service" {
-  name                 = "${local.instance_name}-asg"
-  max_size             = var.asg_max
-  min_size             = var.asg_min
-  desired_capacity     = var.asg_desired
+  name             = "${local.instance_name}-asg"
+  max_size         = var.asg_max
+  min_size         = var.asg_min
+  desired_capacity = var.asg_desired
   launch_template {
-    id = aws_launch_template.bastion-service-host.id
-    version            = "$Latest"
+    id      = aws_launch_template.bastion-service-host.id
+    version = "$Latest"
   }
 
-  vpc_zone_identifier  = var.asg_subnets
+  vpc_zone_identifier = var.asg_subnets
   target_group_arns = concat(
     [aws_lb_target_group.bastion-service.arn],
     aws_lb_target_group.bastion-host.*.arn
@@ -94,8 +95,8 @@ data "template_file" "sample_policies_for_parent_account" {
   template = file("${path.module}/sts_assumerole_example/policy_example.tpl")
 
   vars = {
-    aws_account_arn               = data.aws_caller_identity.current.arn
+    aws_account_arn           = data.aws_caller_identity.current.arn
     bastion_allowed_iam_group = var.bastion_allowed_iam_group
-    bastion_assume_role_arn           = var.bastion_assume_role_arn
+    bastion_assume_role_arn   = var.bastion_assume_role_arn
   }
 }
