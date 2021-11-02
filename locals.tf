@@ -38,7 +38,7 @@ locals {
 ##########################
 
 locals {
-  bastion_ami_id = var.host_ami_id == "" ? data.aws_ami.ubuntu.id : var.host_ami_id
+  bastion_ami_id                = var.host_ami_id == "" ? data.aws_ami.ubuntu.id : var.host_ami_id
   bastion_ami_root_block_device = data.aws_ami.ubuntu.root_device_name
 }
 
@@ -59,12 +59,13 @@ locals {
 }
 
 locals {
-  instance_name = "bastion.${var.name}.${var.aws_environment}.${var.dns_domain}"
-  role_name = "bastion.${var.name}.${var.aws_environment}.${var.dns_domain}"
+  instance_name  = "bastion.${var.name}.${var.aws_environment}.${var.dns_domain}"
+  role_name      = "bastion.${var.name}.${var.aws_environment}.${var.dns_domain}"
   lb_name_prefix = substr("bastion-${var.name}-${var.aws_environment}", 0, 25)
-  sg_name = "bastion-${var.name}-${var.aws_environment}-${var.dns_domain}"
+  sg_name        = "bastion-${var.name}-${var.aws_environment}-${var.dns_domain}"
 }
 
 locals {
-  ec2_tags = merge(var.tags, {"Name"=local.instance_name})
+  # The ASG tags are propagated onto the EC2 instances
+  ec2_tags = merge(var.asg_tags, { "Name" = local.instance_name })
 }

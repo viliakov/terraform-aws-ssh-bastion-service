@@ -1,12 +1,12 @@
 resource "random_string" "lb_name_suffix" {
   keepers = {
     aws_environment = var.aws_environment
-    name = var.name
-    vpc_id = var.vpc_id
-    dns_domain = var.dns_domain
+    name            = var.name
+    vpc_id          = var.vpc_id
+    dns_domain      = var.dns_domain
   }
 
-  length = 6
+  length  = 6
   special = false
 }
 #######################################################
@@ -19,7 +19,7 @@ resource "aws_lb" "bastion-service" {
   internal                         = var.lb_is_internal
   subnets                          = var.lb_subnets
   enable_cross_zone_load_balancing = false
-  tags                             = var.tags
+  tags                             = var.lb_tags
 }
 
 ######################################################
@@ -70,7 +70,7 @@ resource "aws_lb_target_group" "bastion-service" {
     port                = var.lb_healthcheck_port
   }
 
-  tags = var.tags
+  tags = var.lb_tags
 }
 
 ######################################################
@@ -91,6 +91,6 @@ resource "aws_lb_target_group" "bastion-host" {
     port                = var.lb_healthcheck_port
   }
 
-  tags = var.tags
+  tags = var.lb_tags
 }
 

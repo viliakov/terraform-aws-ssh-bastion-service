@@ -20,8 +20,8 @@ variable "bastion_cidr_blocks_whitelist" {
 
 variable "bastion_container_image" {
   description = "The Docker image booted on an SSH connection"
-  type = string
-  default = "ubuntu:20.04"
+  type        = string
+  default     = "ubuntu:20.04"
 }
 
 variable "bastion_host_name" {
@@ -32,8 +32,8 @@ variable "bastion_host_name" {
 
 variable "bastion_ssh_port" {
   description = "The port that the bastion SSH daemon should be exposed on"
-  default = 22
-  type = number
+  default     = 22
+  type        = number
 }
 
 variable "bastion_vpc_name" {
@@ -68,20 +68,20 @@ variable "host_public_ip" {
 
 variable "host_ssh_port" {
   description = "The port that the host SSH daemon should be exposed on"
-  default = 2222
-  type = number
+  default     = 2222
+  type        = number
 }
 
 variable "host_ssh_public_key" {
   description = "The public key that is authorized to SSH into the bastion host"
-  default = ""
-  type = string
+  default     = ""
+  type        = string
 }
 
 variable "host_ssh_username" {
   description = "The default username used to SSH into the bastion host"
-  default = "admin"
-  type = string
+  default     = "admin"
+  type        = string
 }
 
 ##########################
@@ -89,17 +89,17 @@ variable "host_ssh_username" {
 ##########################
 variable "name" {
   description = "Name of this Terraform deployment, used as a prefix for various resources"
-  type = string
+  type        = string
 }
 
 variable "aws_environment" {
   description = "the name of the AWS environment that we are deploying to (i.e. prod, staging, preprod, etc)"
-  type = string
+  type        = string
 }
 
 variable "vpc_id" {
   description = "ID for Virtual Private Cloud to apply security policy and deploy stack to"
-  type = string
+  type        = string
 }
 
 variable "tags" {
@@ -116,8 +116,8 @@ variable "security_groups_additional" {
 
 variable "dns_domain" {
   description = "The domain used for Route53 records"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 ##########################
@@ -171,6 +171,12 @@ variable "lb_unhealthy_threshold" {
   default     = "2"
 }
 
+variable "lb_tags" {
+  type        = map(string)
+  description = "AWS tags that should be associated with the created LB"
+  default     = {}
+}
+
 ##############################
 # AutoScalingGroup variables
 ##############################
@@ -196,6 +202,12 @@ variable "asg_subnets" {
   type        = list(string)
   description = "list of subnets for autoscaling group - availability zones must match lb_subnets"
   default     = []
+}
+
+variable "asg_tags" {
+  type        = map(string)
+  description = "AWS tags that should be associated with the created ASG"
+  default     = {}
 }
 
 ##########################
