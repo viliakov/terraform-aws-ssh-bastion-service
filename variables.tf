@@ -108,12 +108,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "ec2_tags" {
-  type        = map(string)
-  description = "AWS tags that should be associated with created EC2 resources"
-  default     = {}
-}
-
 variable "security_groups_additional" {
   description = "additional security group IDs to attach to host instance"
   type        = list(string)
@@ -177,12 +171,6 @@ variable "lb_unhealthy_threshold" {
   default     = "2"
 }
 
-variable "lb_tags" {
-  type        = map(string)
-  description = "AWS tags that should be associated with the created LB"
-  default     = {}
-}
-
 ##############################
 # AutoScalingGroup variables
 ##############################
@@ -208,12 +196,6 @@ variable "asg_subnets" {
   type        = list(string)
   description = "list of subnets for autoscaling group - availability zones must match lb_subnets"
   default     = []
-}
-
-variable "asg_tags" {
-  type        = map(string)
-  description = "AWS tags that should be associated with the created ASG"
-  default     = {}
 }
 
 ##########################

@@ -59,7 +59,7 @@ resource "aws_autoscaling_group" "bastion-service" {
   # The ASG tags need not be propagated to the instances, as those receive their tags through the launch template
   # This prevents duplicate tags overwriting eachother
   dynamic "tag" {
-    for_each = var.asg_tags
+    for_each = var.tags
     content {
       key                 = tag.key
       value               = tag.value

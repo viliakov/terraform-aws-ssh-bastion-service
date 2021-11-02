@@ -67,5 +67,5 @@ locals {
 
 locals {
   # The EC2 tags are propagated through the Launch Template on the EC2 instances
-  ec2_tags = merge(var.ec2_tags, { "Name" = local.instance_name })
+  ec2_tags = merge(var.tags, { "Name" = local.instance_name })
 }
