@@ -66,6 +66,6 @@ locals {
 }
 
 locals {
-  # The ASG tags are propagated onto the EC2 instances
-  ec2_tags = merge(var.asg_tags, { "Name" = local.instance_name })
+  # The EC2 tags are propagated through the Launch Template on the EC2 instances
+  ec2_tags = merge(var.ec2_tags, { "Name" = local.instance_name })
 }

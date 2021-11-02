@@ -108,6 +108,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "ec2_tags" {
+  type        = map(string)
+  description = "AWS tags that should be associated with created EC2 resources"
+  default     = {}
+}
+
 variable "security_groups_additional" {
   description = "additional security group IDs to attach to host instance"
   type        = list(string)

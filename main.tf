@@ -56,12 +56,14 @@ resource "aws_autoscaling_group" "bastion-service" {
     aws_lb_target_group.bastion-host.*.arn
   )
 
+  # The ASG tags need not be propagated to the instances, as those receive their tags through the launch template
+  # This prevents duplicate tags overwriting eachother
   dynamic "tag" {
-    for_each = local.ec2_tags
+    for_each = var.asg_tags
     content {
       key                 = tag.key
       value               = tag.value
-      propagate_at_launch = true
+      propagate_at_launch = false
     }
   }
 }
