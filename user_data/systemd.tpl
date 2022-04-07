@@ -6,6 +6,7 @@ Description=SSH Socket for Per-Connection docker ssh container
 [Socket]
 ListenStream=${bastion_ssh_port}
 Accept=true
+MaxConnections=1024
 
 [Install]
 WantedBy=sockets.target
@@ -31,6 +32,12 @@ systemctl restart sshd.service
 systemctl enable sshd_worker.socket
 systemctl start sshd_worker.socket
 systemctl daemon-reload
+
+cat << EOF > /etc/cron.hourly/sshd_failed_connection_cleanup
+#!/bin/sh
+systemctl reset-failed "sshd_worker@*.service"
+EOF
+chmod 755 /etc/cron.hourly/sshd_failed_connection_cleanup
 
 #set hostname to match dns
 hostnamectl set-hostname ${bastion_host_name}
