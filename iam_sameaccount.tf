@@ -23,7 +23,7 @@ data "aws_iam_policy_document" "check_ssh_authorized_keys" {
 
 resource "aws_iam_policy" "check_ssh_authorized_keys" {
   count  = local.assume_role_no
-  name = "${local.role_name}-sshkeys"
+  name   = "${local.role_name}-sshkeys"
   policy = data.aws_iam_policy_document.check_ssh_authorized_keys[0].json
 }
 

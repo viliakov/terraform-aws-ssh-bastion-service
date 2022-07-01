@@ -5,10 +5,7 @@ output "service_dns_entry" {
 
 output "policy_example_for_parent_account_empty_if_not_used" {
   description = "You must apply an IAM policy with trust relationship identical or compatible with this in your other AWS account for IAM lookups to function there with STS:AssumeRole and allow users to login"
-  value = join(
-    "",
-    data.template_file.sample_policies_for_parent_account.*.rendered,
-  )
+  value       = local.sample_policies_for_parent_account_template
 }
 
 output "bastion_sg_id" {
@@ -42,10 +39,10 @@ output "target_group_arn" {
 
 output "host_ssh_public_key" {
   description = "SSH public key for the bastion host instance"
-  value = var.host_ssh_public_key
+  value       = var.host_ssh_public_key
 }
 
 output "host_ssh_username" {
   description = "SSH username for the bastion host instance"
-  value = var.host_ssh_username
+  value       = var.host_ssh_username
 }

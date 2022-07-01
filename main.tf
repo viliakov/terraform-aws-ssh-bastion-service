@@ -89,13 +89,12 @@ resource "aws_route53_record" "bastion_service" {
 # sample policy for parent account
 ###################################################
 
-data "template_file" "sample_policies_for_parent_account" {
-  count    = local.assume_role_yes
-  template = file("${path.module}/sts_assumerole_example/policy_example.tpl")
-
-  vars = {
-    aws_account_arn           = data.aws_caller_identity.current.arn
-    bastion_allowed_iam_group = var.bastion_allowed_iam_group
-    bastion_assume_role_arn   = var.bastion_assume_role_arn
-  }
+locals {
+  sample_policies_for_parent_account_template = local.assume_role_yes == 1 ? templatefile("${path.module}/sts_assumerole_example/policy_example.tpl",
+    {
+      aws_account_arn           = data.aws_caller_identity.current.arn
+      bastion_allowed_iam_group = var.bastion_allowed_iam_group
+      bastion_assume_role_arn   = var.bastion_assume_role_arn
+    }
+  ) : ""
 }

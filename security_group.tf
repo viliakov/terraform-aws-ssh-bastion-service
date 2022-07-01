@@ -7,7 +7,7 @@ resource "aws_security_group" "bastion_service" {
   description            = "Bastion service SSH SecurityGroup"
   revoke_rules_on_delete = true
   vpc_id                 = var.vpc_id
-  tags                   = merge({Name = local.sg_name}, var.tags)
+  tags                   = merge({ Name = local.sg_name }, var.tags)
 }
 
 ##################
