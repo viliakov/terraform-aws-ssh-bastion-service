@@ -8,5 +8,9 @@ terraform {
     null = {
       source = "hashicorp/null"
     }
+    cloudinit = {
+      source = "hashicorp/cloudinit"
+      version = "2.2.0"
+    }
   }
 }

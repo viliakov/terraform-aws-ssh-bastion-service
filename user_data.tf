@@ -42,7 +42,7 @@ locals {
 ############################
 # Templates combined section
 ############################
-data "template_cloudinit_config" "config" {
+data "cloudinit_config" "config" {
   gzip          = false
   base64_encode = true
 
